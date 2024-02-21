@@ -20,23 +20,35 @@ import { MembresModule } from './membres/membres.module';
 import { ProjectsModule } from './projects/projects.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
- 
+import { Backlog, BacklogSchema } from './backlog/schemas/backlog.schema';
 
 @Module({
   imports: [
-  ConfigModule.forRoot(),
-  MongooseModule.forRoot(process.env.MONGO_URI),
-  SprintsModule, 
-   UsersModule,
-   ProjectsModule, 
-   MembresModule, 
-   MeetingsModule, 
-   RessourcesModule, 
-   HistoriquesModule, 
-   BacklogModule,
-    TasksModule
-],
-  controllers: [AppController, UsersController, RessourcesController, BacklogController, TasksController],
-  providers: [AppService, ProjectsService, RessourcesService, HistoriquesService, BacklogService],
+    ConfigModule.forRoot(),
+    MongooseModule.forRoot(process.env.MONGO_URI),
+    SprintsModule,
+    UsersModule,
+    ProjectsModule,
+    MembresModule,
+    MeetingsModule,
+    RessourcesModule,
+    HistoriquesModule,
+    MongooseModule.forFeature([{ name: Backlog.name, schema: BacklogSchema }]),
+    TasksModule,
+  ],
+  controllers: [
+    AppController,
+    UsersController,
+    RessourcesController,
+    BacklogController,
+    TasksController,
+  ],
+  providers: [
+    AppService,
+    ProjectsService,
+    RessourcesService,
+    HistoriquesService,
+    BacklogService,
+  ],
 })
 export class AppModule {}

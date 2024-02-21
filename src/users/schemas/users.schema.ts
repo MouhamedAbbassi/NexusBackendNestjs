@@ -6,16 +6,14 @@ export type UsersDocument = HydratedDocument<Users>;
 
 @Schema()
 export class Users {
- 
-
   @Prop()
   name: string;
 
   @Prop()
   email: string;
   @Prop()
-  password: string; 
-  
+  password: string;
+
   @Prop()
   role: string;
   @Prop()
@@ -23,7 +21,6 @@ export class Users {
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Projects' })
   projects: Projects;
-  
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

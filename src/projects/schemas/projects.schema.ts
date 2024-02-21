@@ -9,7 +9,6 @@ export type RessourcesDocument = HydratedDocument<Projects>;
 
 @Schema()
 export class Projects {
-
   @Prop({ required: true })
   name: string;
 
@@ -24,8 +23,6 @@ export class Projects {
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: Ressources.name }])
   ressources: [Ressources];
 
-  
-
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: Membres.name }])
   membres: [Membres];
 
@@ -34,10 +31,6 @@ export class Projects {
 
   @Prop([{ type: mongoose.Schema.Types.ObjectId }])
   users: [Users];
-
-
-
- 
 }
 
 export const ProjectsSchema = SchemaFactory.createForClass(Projects);

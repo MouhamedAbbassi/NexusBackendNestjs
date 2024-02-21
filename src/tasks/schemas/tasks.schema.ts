@@ -5,20 +5,15 @@ import { Projects } from 'src/projects/schemas/projects.schema';
 
 export type TasksDocument = HydratedDocument<Tasks>;
 
-
 export enum Status {
-    todo = 'Todo',
-    progressing = 'progressing',
-    done = 'done',
-    
-
-  }
+  todo = 'Todo',
+  progressing = 'progressing',
+  done = 'done',
+}
 @Schema()
 export class Tasks {
-
   @Prop({ required: true })
   name: string;
-
 
   @Prop({ required: true })
   taskId: string;
@@ -29,8 +24,6 @@ export class Tasks {
   @Prop({ required: true })
   periority: number;
 
-  
-
   @Prop({ required: true })
   estimationDate: Date;
 
@@ -39,9 +32,6 @@ export class Tasks {
 
   @Prop({ type: String, enum: Object.values(Status) })
   status: Status;
-
- 
-
 }
 
 export const TasksSchema = SchemaFactory.createForClass(Tasks);

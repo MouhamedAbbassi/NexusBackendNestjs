@@ -5,13 +5,10 @@ import { Projects } from 'src/projects/schemas/projects.schema';
 export type MembresDocument = HydratedDocument<Membres>;
 
 export enum Role {
-    productOwner = 'product Owner',
-    productManager = 'product Manager',
-    membre = 'membre',
-
-    
-
-  }
+  productOwner = 'product Owner',
+  productManager = 'product Manager',
+  membre = 'membre',
+}
 
 @Schema()
 export class Membres {
@@ -29,11 +26,6 @@ export class Membres {
 
   @Prop({ type: String, enum: Object.values(Role) })
   role: Role;
-
-  
-
-
- 
 }
 
 export const MembresSchema = SchemaFactory.createForClass(Membres);

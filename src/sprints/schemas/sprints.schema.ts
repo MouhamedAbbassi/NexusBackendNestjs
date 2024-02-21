@@ -1,37 +1,30 @@
-import {  Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument } from 'mongoose';
 
 export type RessourcesDocument = HydratedDocument<Sprints>;
 
+export enum SprintStatus {
+  Pret = 'Pret',
+  encours = 'encours',
+  enattente = 'enattente',
+  fait = 'fait',
+}
 
-  export enum SprintStatus {
-    Pret = 'Pret',
-    encours = 'encours',
-    enattente = 'enattente',
-    fait = 'fait',
+export enum Priority {
+  faible = 'faible',
+  critique = 'critique',
+  eleve = 'eleve',
+}
 
-  }
- 
-  export enum Priority {
-    faible = 'faible',
-    critique = 'critique',
-    eleve = 'eleve',
-
-  }
- 
-
-  export enum Type {
-    fonctionnelle = 'fonctionnelle',
-    qualite = 'qualite',
-    bug = 'bug',
-    securite = 'securite',
-  }
-
+export enum Type {
+  fonctionnelle = 'fonctionnelle',
+  qualite = 'qualite',
+  bug = 'bug',
+  securite = 'securite',
+}
 
 @Schema()
-export class Sprints{
-  
-
+export class Sprints {
   @Prop()
   nom: string;
 
@@ -41,7 +34,16 @@ export class Sprints{
   @Prop({ type: Date })
   endDate: Date;
 
-  @Prop({ type: [{ name: String, type: { type: String, enum: Object.values(Type) }, priority: { type: String, enum: Object.values(Priority) }, status: { type: String, enum: Object.values(SprintStatus) } }] })
+  @Prop({
+    type: [
+      {
+        name: String,
+        type: { type: String, enum: Object.values(Type) },
+        priority: { type: String, enum: Object.values(Priority) },
+        status: { type: String, enum: Object.values(SprintStatus) },
+      },
+    ],
+  })
   taches: { name: string; type: string; priority: string; status: string }[];
 
   @Prop({ type: String, enum: Object.values(SprintStatus) })
@@ -59,7 +61,5 @@ export class Sprints{
   @Prop()
   asp: number;
 }
-
-
 
 export const SprintsSchema = SchemaFactory.createForClass(Sprints);
