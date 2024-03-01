@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -6,20 +7,32 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Backlog, BacklogDocument } from './schemas/backlog.schema';
+import { Tasks, TasksDocument } from 'src/tasks/schemas/tasks.schema';
 
 @Injectable()
 export class BacklogService {
   constructor(
     @InjectModel(Backlog.name)
     private readonly backlogModel: Model<BacklogDocument>,
+    @InjectModel(Tasks.name) private readonly tasksModel: Model<TasksDocument>,
   ) {}
   ////////////////////////ADD BACKLOG/////////////////////////
-  async create(backlog: Backlog): Promise<Backlog> {
+  async create(backlog: Backlog, projectId: string): Promise<Backlog> {
     try {
-      const createdBacklog = new this.backlogModel(backlog);
-      return await createdBacklog.save();
+      const existingBacklog = await this.backlogModel
+        .findOne({ projects: projectId })
+        .exec();
+      // If no existing backlog found, proceed with creating a new backlog
+      if (!existingBacklog) {
+        backlog.projects = projectId;
+        const createdBacklog = new this.backlogModel(backlog);
+        return await createdBacklog.save();
+      } else
+        throw new BadRequestException('This project already has a backlog');
     } catch (error) {
-      throw new InternalServerErrorException('Failed to create backlog');
+      if (error instanceof BadRequestException) {
+        throw error;
+      } else throw new InternalServerErrorException('Failed to create backlog');
     }
   }
   ////////////////////////GET ALL BACKLOG////////////////////
@@ -62,5 +75,26 @@ export class BacklogService {
     } catch (error) {
       throw new InternalServerErrorException('Failed to delete backlog');
     }
+  }
+  ////////////////////////CREATE TASK TO BACKLOG/////////////////////////
+  async createTaskAndAssignToBacklog(
+    backlogId: string,
+    task: Tasks,
+  ): Promise<Tasks> {
+    // Find the backlog by ID
+    const backlog = await this.backlogModel.findById(backlogId).exec();
+    if (!backlog) {
+      throw new NotFoundException('Backlog not found');
+    }
+    // Assign the backlog ID to the task
+    task.backlog = backlogId;
+    // Create a new task
+    const createdTask = new this.tasksModel(task);
+    // Save the task
+    const savedTask = await createdTask.save();
+    // Add the task to the backlog
+    backlog.tasks.push(savedTask._id.toString());
+    await backlog.save();
+    return savedTask;
   }
 }

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -11,20 +12,33 @@ import {
 } from '@nestjs/common';
 import { BacklogService } from './backlog.service';
 import { Backlog } from './schemas/backlog.schema';
+import { Tasks } from 'src/tasks/schemas/tasks.schema';
 
 @Controller('backlog')
 export class BacklogController {
   constructor(private readonly backlogService: BacklogService) {}
 
-  ////////////////////////ADD BACKLOG/////////////////////////
-  @Post()
-  async create(@Body() backlog: Backlog): Promise<Backlog> {
+  ///////////////////ADD BACKLOG TO PROJECT/////////////////
+  @Post(':projectId')
+  async create(
+    @Body() backlog: Backlog,
+    @Param('projectId') projectId: string,
+  ): Promise<Backlog> {
     try {
-      return await this.backlogService.create(backlog);
+      return await this.backlogService.create(backlog, projectId);
     } catch (error) {
-      throw new InternalServerErrorException('Failed to create backlog');
+      // Handle specific error returned by the service
+      if (error.response && error.response.statusCode === 400) {
+        throw new InternalServerErrorException(
+          'This project already has a backlog',
+        );
+      } else {
+        // Handle other unexpected errors
+        throw new InternalServerErrorException('Failed to create backlog');
+      }
     }
   }
+
   ////////////////////////GET ALL BACKLOG////////////////////
   @Get()
   async findAll(): Promise<Backlog[]> {
@@ -66,6 +80,29 @@ export class BacklogController {
       return await this.backlogService.Delete(id);
     } catch (error) {
       throw new InternalServerErrorException('Failed to delete backlog');
+    }
+  }
+  ////////////////////////CREATE TASK TO BACKLOG/////////////////////////
+  @Post(':backlogId/tasks')
+  async createTaskAndAssignToBacklog(
+    @Param('backlogId') backlogId: string,
+    @Body() task: Tasks,
+  ) {
+    try {
+      return await this.backlogService.createTaskAndAssignToBacklog(
+        backlogId,
+        task,
+      );
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else if (error instanceof BadRequestException) {
+        throw new BadRequestException(error.message);
+      } else {
+        throw new BadRequestException(
+          'Failed to create task and assign it to backlog',
+        );
+      }
     }
   }
 }

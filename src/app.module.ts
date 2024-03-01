@@ -21,6 +21,8 @@ import { ProjectsModule } from './projects/projects.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { Backlog, BacklogSchema } from './backlog/schemas/backlog.schema';
+import { Tasks, TasksSchema } from './tasks/schemas/tasks.schema';
+import { TasksService } from './tasks/tasks.service';
 
 @Module({
   imports: [
@@ -34,7 +36,7 @@ import { Backlog, BacklogSchema } from './backlog/schemas/backlog.schema';
     RessourcesModule,
     HistoriquesModule,
     MongooseModule.forFeature([{ name: Backlog.name, schema: BacklogSchema }]),
-    TasksModule,
+    MongooseModule.forFeature([{ name: Tasks.name, schema: TasksSchema }]),
   ],
   controllers: [
     AppController,
@@ -49,6 +51,7 @@ import { Backlog, BacklogSchema } from './backlog/schemas/backlog.schema';
     RessourcesService,
     HistoriquesService,
     BacklogService,
+    TasksService,
   ],
 })
 export class AppModule {}
