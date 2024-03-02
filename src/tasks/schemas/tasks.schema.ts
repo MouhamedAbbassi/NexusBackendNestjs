@@ -4,8 +4,9 @@ export type TasksDocument = HydratedDocument<Tasks>;
 
 export enum Status {
   todo = 'Todo',
-  progressing = 'progressing',
-  done = 'done',
+  progressing = 'Progressing',
+  done = 'Done',
+  Blocked = 'Blocked',
 }
 @Schema()
 export class Tasks {

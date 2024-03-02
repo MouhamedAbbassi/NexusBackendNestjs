@@ -21,7 +21,7 @@ export class TasksController {
     try {
       return await this.taskService.findAll();
     } catch (error) {
-      throw new InternalServerErrorException('Failed to fetch tasks');
+      throw new InternalServerErrorException('Tasks fetching fail');
     }
   }
   ////////////////////////FIND TASKS BY ID/////////////////////////

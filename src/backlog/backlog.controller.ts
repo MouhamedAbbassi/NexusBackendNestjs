@@ -13,6 +13,7 @@ import {
 import { BacklogService } from './backlog.service';
 import { Backlog } from './schemas/backlog.schema';
 import { Tasks } from 'src/tasks/schemas/tasks.schema';
+import { Projects } from 'src/projects/schemas/projects.schema';
 
 @Controller('backlog')
 export class BacklogController {
@@ -103,6 +104,19 @@ export class BacklogController {
           'Failed to create task and assign it to backlog',
         );
       }
+    }
+  }
+
+  ///////////////////////FIND PROJECT NAME BY ID/////////////////////////
+  @Get(':id/project')
+  async findProjectByid(@Param('id') id: string): Promise<Projects> {
+    try {
+      return await this.backlogService.findProjectById(id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to fetch project');
     }
   }
 }

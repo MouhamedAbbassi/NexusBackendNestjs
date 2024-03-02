@@ -8,6 +8,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Backlog, BacklogDocument } from './schemas/backlog.schema';
 import { Tasks, TasksDocument } from 'src/tasks/schemas/tasks.schema';
+import {
+  Projects,
+  ProjectsDocument,
+} from 'src/projects/schemas/projects.schema';
 
 @Injectable()
 export class BacklogService {
@@ -15,6 +19,8 @@ export class BacklogService {
     @InjectModel(Backlog.name)
     private readonly backlogModel: Model<BacklogDocument>,
     @InjectModel(Tasks.name) private readonly tasksModel: Model<TasksDocument>,
+    @InjectModel(Projects.name)
+    private readonly projectsModel: Model<ProjectsDocument>,
   ) {}
   ////////////////////////ADD BACKLOG/////////////////////////
   async create(backlog: Backlog, projectId: string): Promise<Backlog> {
@@ -96,5 +102,21 @@ export class BacklogService {
     backlog.tasks.push(savedTask._id.toString());
     await backlog.save();
     return savedTask;
+  }
+
+  ///////////////////////FIND PROJECT NAME BY ID/////////////////////////
+  async findProjectById(id: string): Promise<Projects> {
+    try {
+      const foundProject = await this.projectsModel.findById(id).exec();
+      if (!foundProject) {
+        throw new NotFoundException('Project not found');
+      }
+      return foundProject;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to fetch Project');
+    }
   }
 }

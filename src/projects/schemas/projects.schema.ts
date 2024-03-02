@@ -1,9 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document, HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 import { Backlog } from 'src/backlog/schemas/backlog.schema';
 import { Membres } from 'src/membres/schemas/Membres.schema';
 import { Ressources } from 'src/ressources/schemas/ressources.schema';
 import { Users } from 'src/users/schemas/users.schema';
+export type ProjectsDocument = HydratedDocument<Projects>;
 
 export type RessourcesDocument = HydratedDocument<Projects>;
 
