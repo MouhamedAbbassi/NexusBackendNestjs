@@ -12,11 +12,7 @@ import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import { EmailVerification, EmailVerificationDocument } from './schemas/email-verification.schema'; 
 import * as nodemailer from 'nodemailer';
-
-
-
 import { ConfigService } from '@nestjs/config';
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -24,7 +20,6 @@ export class UsersService {
     @InjectModel(EmailVerification.name) private readonly emailVerificationModel: Model<EmailVerificationDocument>,
     private jwtService: JwtService,
     private configService: ConfigService,
-
   ) {}
  
   async findByEmail(email: string): Promise<Users | null> {
