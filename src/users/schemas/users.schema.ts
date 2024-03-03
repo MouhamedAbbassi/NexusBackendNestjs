@@ -14,10 +14,13 @@ export class Users {
   @Prop({ unique: [true, 'Duplicate email entered']})
   email: string;
 
+
   
   @Prop({ required: true })
   password: string; 
+
   
+
   @Prop({ required: true, enum: ['admin', 'user'], default: 'user' })
   role: string;
   @Prop()

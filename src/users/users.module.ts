@@ -11,6 +11,10 @@ import { EmailVerification, EmailVerificationSchema } from './schemas/email-veri
 @Module({
   imports: [
 
+
+    MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }]),
+
+
     PassportModule.register({ defaultStrategy: 'jwt' }),
     MongooseModule.forFeature([
       { name: Users.name, schema: UsersSchema },

@@ -18,6 +18,9 @@ import { MembresModule } from './membres/membres.module';
 import { ProjectsModule } from './projects/projects.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from './auth/auth.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { Backlog, BacklogSchema } from './backlog/schemas/backlog.schema';
 import { Tasks, TasksSchema } from './tasks/schemas/tasks.schema';
 import { TasksService } from './tasks/tasks.service';
@@ -28,6 +31,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    JwtModule,
     MongooseModule.forRoot(process.env.MONGO_URI),
     SprintsModule,
     UsersModule,
@@ -40,6 +44,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
     ]),
     MongooseModule.forFeature([{ name: Backlog.name, schema: BacklogSchema }]),
     MongooseModule.forFeature([{ name: Tasks.name, schema: TasksSchema }]),
+    AuthModule,
+
   ],
   controllers: [
     AppController,
@@ -56,6 +62,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
     BacklogService,
     TasksService,
   ],
+
 })
 export class AppModule{
   
