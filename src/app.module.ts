@@ -18,6 +18,7 @@ import { MembresModule } from './membres/membres.module';
 import { ProjectsModule } from './projects/projects.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
+<<<<<<< HEAD
 import { Backlog, BacklogSchema } from './backlog/schemas/backlog.schema';
 import { Tasks, TasksSchema } from './tasks/schemas/tasks.schema';
 import { TasksService } from './tasks/tasks.service';
@@ -54,5 +55,35 @@ import { Projects, ProjectsSchema } from './projects/schemas/projects.schema';
     BacklogService,
     TasksService,
   ],
+=======
+import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from './auth/auth.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+
+
+
+@Module({
+  imports: [
+  ConfigModule.forRoot(),
+  JwtModule,
+  MongooseModule.forRoot(process.env.MONGO_URI),
+  SprintsModule, 
+   UsersModule,
+   ProjectsModule, 
+   MembresModule, 
+   MeetingsModule, 
+   RessourcesModule, 
+   HistoriquesModule, 
+   BacklogModule,
+    TasksModule,
+    AuthModule,
+
+],
+
+  controllers: [AppController, UsersController, RessourcesController, BacklogController, TasksController],
+  providers: [AppService, ProjectsService, RessourcesService, HistoriquesService, BacklogService,],
+>>>>>>> 11daeca84d700176ee06da93a1be180673f31991
 })
-export class AppModule {}
+export class AppModule {
+  
+}
