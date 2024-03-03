@@ -10,6 +10,13 @@ import { EmailVerification, EmailVerificationSchema } from './schemas/email-veri
 
 @Module({
   imports: [
+<<<<<<< HEAD
+    MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }]),
+  ],
+  controllers: [UsersController],
+
+  providers: [UsersService],
+=======
     PassportModule.register({ defaultStrategy: 'jwt' }),
     MongooseModule.forFeature([
       { name: Users.name, schema: UsersSchema },
@@ -30,5 +37,6 @@ import { EmailVerification, EmailVerificationSchema } from './schemas/email-veri
   controllers: [UsersController],
   providers: [UsersService],  
   exports: [UsersService], // Exportez UsersService pour une utilisation dans d'autres modules
+>>>>>>> 11daeca84d700176ee06da93a1be180673f31991
 })
 export class UsersModule {}

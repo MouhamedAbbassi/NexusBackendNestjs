@@ -5,10 +5,10 @@ import { BacklogController } from './backlog.controller';
 import { BacklogService } from './backlog.service';
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([{ name: Backlog.name, schema: BacklogSchema}])
-      ],
-      controllers: [BacklogController],
-      providers: [BacklogService]
+  imports: [
+    MongooseModule.forFeature([{ name: Backlog.name, schema: BacklogSchema }]),
+  ],
+  controllers: [BacklogController],
+  providers: [BacklogService],
 })
 export class BacklogModule {}

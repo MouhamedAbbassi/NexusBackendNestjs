@@ -1,23 +1,15 @@
-import {  Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument } from 'mongoose';
 
 export type MeetingsDocument = HydratedDocument<Meetings>;
 
-
-  export enum Type {
-    daily = 'daily',
-    afterSprint = 'after sprint',
-    
-
-  }
- 
-  
-
+export enum Type {
+  daily = 'daily',
+  afterSprint = 'after sprint',
+}
 
 @Schema()
-export class Meetings{
-  
-
+export class Meetings {
   @Prop()
   title: string;
 
@@ -27,15 +19,11 @@ export class Meetings{
   @Prop({ type: Date })
   endDate: Date;
 
-  
-
   @Prop({ type: String, enum: Object.values(Type) })
   type: Type;
 
   @Prop()
   status: string;
-
-  
 
   @Prop({ type: Date })
   dailyDate: Date;
@@ -43,7 +31,5 @@ export class Meetings{
   @Prop()
   linkMeet: string;
 }
-
-
 
 export const MeetingsSchema = SchemaFactory.createForClass(Meetings);
