@@ -21,12 +21,13 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-
 import { Backlog, BacklogSchema } from './backlog/schemas/backlog.schema';
 import { Tasks, TasksSchema } from './tasks/schemas/tasks.schema';
 import { TasksService } from './tasks/tasks.service';
 import { Projects, ProjectsSchema } from './projects/schemas/projects.schema';
-
+import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from './auth/auth.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -62,14 +63,7 @@ import { Projects, ProjectsSchema } from './projects/schemas/projects.schema';
     TasksService,
   ],
 
-
-
-
-
-
-
-
 })
-export class AppModule {
+export class AppModule{
   
 }

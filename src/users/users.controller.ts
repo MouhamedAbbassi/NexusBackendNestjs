@@ -4,7 +4,6 @@ import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { EmailVerificationDto } from './dto/email-verification.dto';
 import { PasswordRecoveryDto } from './dto/password-recovery.dto';
 
 
