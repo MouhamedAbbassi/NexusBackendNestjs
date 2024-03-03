@@ -27,10 +27,7 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/mongoose": "^10.0.4",
-<<<<<<< HEAD
-    "@nestjs/platform-express": "^10.0.0",
-    "dotenv": "^16.4.4",
-=======
+
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.3.3",
     "bcryptjs": "^2.4.3",
@@ -40,7 +37,7 @@
     "dotenv": "^16.4.5",
     "envalid": "^8.0.0",
     "mailer": "^0.6.7",
->>>>>>> 11daeca84d700176ee06da93a1be180673f31991
+
     "mongoose": "^8.1.3",
     "nodemailer": "^6.9.11",
     "otp-generator": "^4.0.1",
