@@ -20,11 +20,16 @@ import { MembresModule } from './membres/membres.module';
 import { ProjectsModule } from './projects/projects.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
- 
+import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from './auth/auth.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+
+
 
 @Module({
   imports: [
   ConfigModule.forRoot(),
+  JwtModule,
   MongooseModule.forRoot(process.env.MONGO_URI),
   SprintsModule, 
    UsersModule,
@@ -34,9 +39,14 @@ import { ConfigModule } from '@nestjs/config';
    RessourcesModule, 
    HistoriquesModule, 
    BacklogModule,
-    TasksModule
+    TasksModule,
+    AuthModule,
+
 ],
+
   controllers: [AppController, UsersController, RessourcesController, BacklogController, TasksController],
-  providers: [AppService, ProjectsService, RessourcesService, HistoriquesService, BacklogService],
+  providers: [AppService, ProjectsService, RessourcesService, HistoriquesService, BacklogService,],
 })
-export class AppModule {}
+export class AppModule {
+  
+}

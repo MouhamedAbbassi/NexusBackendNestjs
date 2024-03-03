@@ -4,25 +4,39 @@ import { Projects } from 'src/projects/schemas/projects.schema';
 
 export type UsersDocument = HydratedDocument<Users>;
 
-@Schema()
+@Schema({
+  timestamps: true
+})
 export class Users {
  
 
   @Prop()
   name: string;
 
-  @Prop()
+  @Prop({ unique: [true, 'Duplicate email entered']})
   email: string;
-  @Prop()
+  
+  @Prop({ required: true })
   password: string; 
   
-  @Prop()
+  @Prop({ required: true, enum: ['admin', 'user'], default: 'user' })
   role: string;
   @Prop()
   phoneNumber: number;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Projects' })
   projects: Projects;
+
+  @Prop()
+  resetToken: string;
+
+  @Prop()
+  resetTokenExpiration: Date;
+    save: any;
+
+    @Prop({ default: false })
+    emailVerified: boolean;
+
   
 }
 
