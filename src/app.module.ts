@@ -15,19 +15,17 @@ import { RessourcesService } from './ressources/ressources.service';
 import { RessourcesController } from './ressources/ressources.controller';
 import { MeetingsModule } from './meetings/meetings.module';
 import { MembresModule } from './membres/membres.module';
-import { ProjectsModule } from './projects/projects.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
-import { MailerModule } from '@nestjs-modules/mailer';
+import { WakatimeModule } from './wakatime/wakatime.module';
 import { Backlog, BacklogSchema } from './backlog/schemas/backlog.schema';
 import { Tasks, TasksSchema } from './tasks/schemas/tasks.schema';
 import { TasksService } from './tasks/tasks.service';
 import { Projects, ProjectsSchema } from './projects/schemas/projects.schema';
-import { JwtModule } from '@nestjs/jwt';
-import { AuthModule } from './auth/auth.module';
-import { MailerModule } from '@nestjs-modules/mailer';
+import { WakatimeController } from './wakatime/wakatime.controller';
+import { WakatimeService } from './wakatime/wakatime.service';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -45,6 +43,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
     MongooseModule.forFeature([{ name: Backlog.name, schema: BacklogSchema }]),
     MongooseModule.forFeature([{ name: Tasks.name, schema: TasksSchema }]),
     AuthModule,
+    WakatimeModule,
 
   ],
   controllers: [
@@ -53,6 +52,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
     RessourcesController,
     BacklogController,
     TasksController,
+    WakatimeController,
   ],
   providers: [
     AppService,
@@ -61,6 +61,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
     HistoriquesService,
     BacklogService,
     TasksService,
+    WakatimeService,
   ],
 
 })

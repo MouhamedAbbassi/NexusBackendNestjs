@@ -119,4 +119,15 @@ export class BacklogController {
       throw new InternalServerErrorException('Failed to fetch project');
     }
   }
+  @Get(':id/tasks')
+  async findTasksByBacklog(@Param('id') id: string): Promise<Tasks[]> {
+    try {
+      return await this.backlogService.findTasksByBacklog(id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to fetch backlog');
+    }
+  }
 }
