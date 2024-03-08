@@ -11,29 +11,22 @@ export type MeetingsDocument = HydratedDocument<Meetings>;
 export class Meetings{
   
 
-  @Prop()
-  meetingName: string;
+  @Prop({ required: true })
+  summary: string;
 
-  @Prop({ type: Date })
-  startDate: Date;
+  @Prop({ required: true })
+  description: string;
 
-  @Prop({ type: Date })
-  endDate: Date;
+  @Prop({ required: true })
+  startDateTime: Date;
 
-  @Prop()
-  sujet: string;
+  @Prop({ required: true })
+  endDateTime: Date;
 
-  @Prop({ type: Number })
-  quant: number;
+  
 
-  @Prop({ type: Number })
-  duree: number;
-
-  @Prop()
-  fuseau_horaire: string;
-
-  @Prop({ type: [String] })
-  participants: string[];
+  @Prop({ type: [{ email: String }], required: true })
+  attendees: { email: string }[];
  
 
 

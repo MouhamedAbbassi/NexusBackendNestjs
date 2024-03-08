@@ -1,70 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { google } from 'googleapis';
 import * as dotenv from 'dotenv';
 import { v4 as uuid } from 'uuid';
+import { Meetings, MeetingsDocument } from './schemas/meetings.schema';
 
 @Injectable()
 export class MeetingsService {
 
-  public readonly oauth2Client: any;
-  private readonly calendar: any;
+  constructor(
+    @InjectModel(Meetings.name) private meetingsModel: Model<MeetingsDocument>,
+  ) {}
 
-  constructor() {
-    this.oauth2Client = new google.auth.OAuth2(
-      process.env.CLIENT_ID,
-      process.env.CLIENT_SECRET,
-      process.env.REDIRECT_URL,
+  async createMeeting(meetingData: Meetings): Promise<Meetings> {
+    const createdMeeting = new this.meetingsModel(meetingData);
+    return createdMeeting.save();
+  }
+
+  async getAllMeetings(): Promise<Meetings[]> {
+    return this.meetingsModel.find().exec();
+  }
+
+  async updateMeeting(id: string, meetingData: Meetings): Promise<Meetings> {
+    const updatedMeeting = await this.meetingsModel.findByIdAndUpdate(
+      id,
+      meetingData,
+      { new: true }, // Retourne le document mis à jour
     );
 
-    this.calendar = google.calendar({
-      version: 'v3',
-      auth: this.oauth2Client,
-    });
+    if (!updatedMeeting) {
+      throw new NotFoundException(`Meeting with ID ${id} not found`);
+    }
+
+    return updatedMeeting;
   }
 
-  generateAuthUrl(): string {
-    const scopes = ['https://www.googleapis.com/auth/calendar'];
-    return this.oauth2Client.generateAuthUrl({
-      access_type: 'offline',
-      scope: scopes,
-    });
+  async deleteMeeting(id: string): Promise<void> {
+    const deletedMeeting = await this.meetingsModel.findByIdAndDelete(id);
+
+    if (!deletedMeeting) {
+      throw new NotFoundException(`Meeting with ID ${id} not found`);
+    }
   }
 
-  async handleRedirect(code: string): Promise<void> {
-    const { tokens } = await this.oauth2Client.getToken(code);
-    this.oauth2Client.setCredentials(tokens);
-  }
+  async getMeetingById(id: string): Promise<Meetings> {
+    const meeting = await this.meetingsModel.findById(id);
 
-  async scheduleEvent(): Promise<void> {
-    await this.calendar.events.insert({
-      calendarId: 'primary',
-      auth: this.oauth2Client,
-      conferenceDataVersion: 1,
-      requestBody: {
-        summary: 'this is a test event',
-        description: 'some event that is very important',
-        start: {
-          dateTime: new Date().toISOString(),
-          timeZone: 'Africa/Tunis',
-        },
-        end: {
-          dateTime: new Date(new Date().getTime() + 1 * 60 * 60 * 1000).toISOString(),
-          timeZone: 'Africa/Tunis',
-        },
-        conferenceData: {
-          createRequest: {
-            requestId: uuid(),
-          },
-        },
-        attendees: [
-          {
-            email: 'narimen.azzouz@esprit.tn',
-          },
-        ],
-      },
-    });
+    if (!meeting) {
+      throw new NotFoundException(`Meeting with ID ${id} not found`);
+    }
+
+    return meeting;
   }
 }
-  
