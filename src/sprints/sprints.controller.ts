@@ -12,11 +12,10 @@ export class SprintsController {
         @Body('nom') nom: string,
         @Body('startDate') startDate: Date,
         @Body('endDate') endDate: Date,
-        @Body('taches') taches: { name: string; type: string; priority: string; status: string }[],
-        @Body('esp') esp: number,
-        @Body('asp') asp: number,
+        @Body('taches') taches: { name: string; type: string; priority: string; status: string; esp: number; asp: number;  }[],
+        
     ) {
-        const nouveauSprint = await this.sprintService.ajouterSprint(nom, startDate, endDate, taches, esp, asp);
+        const nouveauSprint = await this.sprintService.ajouterSprint(nom, startDate, endDate, taches);
         return { sprint: nouveauSprint };
     }
 

@@ -41,7 +41,7 @@ export class Sprints{
   @Prop({ type: Date })
   endDate: Date;
 
-  @Prop({ type: [{ name: String, type: { type: String, enum: Object.values(Type) }, priority: { type: String, enum: Object.values(Priority) }, status: { type: String, enum: Object.values(SprintStatus) } }] })
+  @Prop({ type: [{ name: String, type: { type: String, enum: Object.values(Type) }, priority: { type: String, enum: Object.values(Priority) }, status: { type: String, enum: Object.values(SprintStatus) } ,esp: Number,asp: Number}] })
   taches: { name: string; type: string; priority: string; status: string }[];
 
   @Prop({ type: String, enum: Object.values(SprintStatus) })

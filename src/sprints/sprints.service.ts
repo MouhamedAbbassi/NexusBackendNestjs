@@ -8,14 +8,13 @@ export class SprintsService {
 
     constructor(@InjectModel(Sprints.name) private sprintModel: Model<RessourcesDocument>){}
 
-    async ajouterSprint(nom: string, startDate: Date, endDate: Date, taches: { name: string; type: string; priority: string; status: string }[], esp: number, asp: number): Promise<Sprints> {
+    async ajouterSprint(nom: string, startDate: Date, endDate: Date, taches: { name: string; type: string; priority: string; status: string,esp: number, asp: number }[]): Promise<Sprints> {
         const createdSprint = new this.sprintModel({
             nom,
             startDate,
             endDate,
             taches,
-            esp,
-            asp,
+            
         });
     
         return createdSprint.save();
