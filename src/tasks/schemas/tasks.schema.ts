@@ -7,6 +7,7 @@ export enum Status {
   progressing = 'Progressing',
   done = 'Done',
   Blocked = 'Blocked',
+  Testing = 'Testing',
 }
 @Schema()
 export class Tasks {

@@ -9,7 +9,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { Tasks } from './schemas/tasks.schema';
+import { Status, Tasks } from './schemas/tasks.schema';
 
 @Controller('tasks')
 export class TasksController {
@@ -52,6 +52,17 @@ export class TasksController {
       return await this.taskService.Delete(id);
     } catch (error) {
       throw new InternalServerErrorException('Failed to delete Task');
+    }
+  }
+  @Put(':id/status/:status')
+  async updateStatus(
+    @Param('id') id: string,
+    @Param('status') status: Status,
+  ): Promise<Tasks> {
+    try {
+      return await this.taskService.updateStatus(id, status);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to update Task');
     }
   }
 }
