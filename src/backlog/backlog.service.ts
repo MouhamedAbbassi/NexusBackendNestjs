@@ -119,4 +119,27 @@ export class BacklogService {
       throw new InternalServerErrorException('Failed to fetch Project');
     }
   }
+
+  async findTasksByBacklog(id: string): Promise<Tasks[]> {
+    try {
+      const foundBacklog = await this.backlogModel.findById(id).exec();
+      if (!foundBacklog) {
+        throw new NotFoundException('Backlog not found');
+      }
+      // Retrieve task IDs from the found backlog
+      const taskIds = foundBacklog.tasks;
+      // Fetch tasks using the retrieved task IDs
+      const tasks = await this.tasksModel
+        .find({ _id: { $in: taskIds } })
+        .exec();
+
+      // Return the list of tasks
+      return tasks;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to fetch Tasks');
+    }
+  }
 }
