@@ -35,7 +35,7 @@ export class TasksService {
       throw new InternalServerErrorException('Failed to fetch Tasks');
     }
   }
-  ////////////////////////UPDATE BACKLOG/////////////////////////
+  ////////////////////////UPDATE TASKS/////////////////////////
   async update(id: string, task: Tasks): Promise<Tasks> {
     try {
       return await this.tasksModel
@@ -45,7 +45,7 @@ export class TasksService {
       throw new InternalServerErrorException('Failed to update task');
     }
   }
-  ////////////////////////DELETE BACKLOG/////////////////////////
+  ////////////////////////DELETE TASKS/////////////////////////
   async Delete(id: string): Promise<Tasks> {
     try {
       return await this.tasksModel.findByIdAndDelete(id);
@@ -53,6 +53,7 @@ export class TasksService {
       throw new InternalServerErrorException('Failed to delete backlog');
     }
   }
+  ////////////////////////UPDATE TASKS STATUS BY ID/////////////////////////
   async updateStatus(id: string, status: Status): Promise<Tasks> {
     try {
       // Find the task by ID
@@ -71,5 +72,4 @@ export class TasksService {
       throw new InternalServerErrorException('Failed to update task');
     }
   }
-  
 }
