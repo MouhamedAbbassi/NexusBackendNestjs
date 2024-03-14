@@ -29,7 +29,7 @@ export class Tasks {
   userStory: string;
 
   @Prop({ required: true })
-  estimation: Date;
+  deadLine: Date;
 
   @Prop({
     type: String,
@@ -37,9 +37,6 @@ export class Tasks {
     default: Priority.medium,
   })
   priority: Priority;
-
-  @Prop({ required: false })
-  estimationDate: Date;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Backlog' })
   backlog: string;
