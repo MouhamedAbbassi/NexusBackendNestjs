@@ -130,4 +130,17 @@ export class BacklogController {
       throw new InternalServerErrorException('Failed to fetch backlog');
     }
   }
+  @Get(':id/completion')
+  async BacklogCompletion(@Param('id') id: string): Promise<string> {
+    try {
+      return await this.backlogService.BacklogCompletion(id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'Failed to calculate Tasks completion percentage',
+      );
+    }
+  }
 }

@@ -142,4 +142,57 @@ export class BacklogService {
       throw new InternalServerErrorException('Failed to fetch Tasks');
     }
   }
+  ////////////////////////BACKLOG TASKS COMPLETION /////////////////////////
+  async BacklogCompletion(id: string): Promise<string> {
+    try {
+      const foundBacklog = await this.backlogModel.findById(id).exec();
+      if (!foundBacklog) {
+        throw new NotFoundException('Backlog not found');
+      }
+      // Retrieve task IDs from the found backlog
+      const taskIds = foundBacklog.tasks;
+      // Fetch tasks using the retrieved task IDs
+      const tasks = await this.tasksModel
+        .find({ _id: { $in: taskIds } })
+        .exec();
+
+      let totalScore = 0;
+
+      tasks.forEach((task) => {
+        let status = 0;
+        switch (task.status) {
+          case 'Todo':
+            status = 0;
+            break;
+          case 'Progressing':
+            status = 2;
+            break;
+          case 'Testing':
+            status = 4;
+            break;
+          case 'Done':
+            status = 5;
+            break;
+          case 'Blocked':
+            status = -0.5;
+            break;
+          default:
+            status = 0;
+        }
+        totalScore += status;
+      });
+
+      // Calculate the backlog completion percentage
+      const backlogCompletion = totalScore / (5 * tasks.length);
+
+      return backlogCompletion.toFixed(3);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'Failed to calculate Tasks completion percentage',
+      );
+    }
+  }
 }
