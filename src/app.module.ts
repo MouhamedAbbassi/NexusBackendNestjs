@@ -44,6 +44,7 @@ import { Projects, ProjectsSchema } from './projects/schemas/projects.schema';
     MongooseModule.forFeature([{ name: Backlog.name, schema: BacklogSchema }]),
     MongooseModule.forFeature([{ name: Tasks.name, schema: TasksSchema }]),
     AuthModule,
+    
 
   ],
   controllers: [

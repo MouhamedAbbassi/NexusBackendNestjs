@@ -18,7 +18,6 @@ export class Users {
   password: string;
 
  
-  
 
   @Prop({ required: true, enum: ['admin', 'user'], default: 'user' })
   role: string;
@@ -36,9 +35,9 @@ export class Users {
   resetTokenExpiration: Date;
     save: any;
 
-    @Prop({ default: false })
+   /*@Prop({ default: false })
     emailVerified: boolean;
-
+*/
   
 
 }

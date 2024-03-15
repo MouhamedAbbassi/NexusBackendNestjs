@@ -31,6 +31,7 @@ import { EmailVerification, EmailVerificationSchema } from './schemas/email-veri
         },
       }),
     }),
+ 
   ],
   controllers: [UsersController],
   providers: [UsersService],  

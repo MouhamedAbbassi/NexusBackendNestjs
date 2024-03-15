@@ -1,5 +1,5 @@
 // users.service.ts
-import { Injectable, UnauthorizedException, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, NotFoundException} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Users, UsersDocument } from './schemas/users.schema';
@@ -12,24 +12,38 @@ import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import { EmailVerification, EmailVerificationDocument } from './schemas/email-verification.schema'; 
 import * as nodemailer from 'nodemailer';
-
-
+import { Request } from 'express';
 
 import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(Users.name) private usersModel: Model<UsersDocument>,
     @InjectModel(EmailVerification.name) private readonly emailVerificationModel: Model<EmailVerificationDocument>,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
     private configService: ConfigService,
 
   ) {}
  
-  async findByEmail(email: string): Promise<Users | null> {
+
+  async findAll(): Promise<Users[]> {
+    return this.usersModel.find().exec();
+  }
+ async findByEmail(email: string): Promise<Users | null> {
     return this.usersModel.findOne({ email }).exec();
   }
+ /* async findByEmail(email: string): Promise<Users | null> {
+    try {
+      // Recherche insensible à la casse
+      const user = await this.usersModel.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
+      return user;
+    } catch (error) {
+      // Gestion des erreurs
+      console.error("Error while finding user by email:", error);
+      return null;
+    }}*/
 
   async signup(signUpDto: SignUpDto): Promise<{ token: string }> {
     const { name, email, password, phoneNumber, role } = signUpDto;
@@ -107,7 +121,7 @@ async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: s
     // Définir le contenu de l'e-mail
     const mailOptions = {
       from: 'raouiadaghnouj66@gmail.com', // Votre adresse e-mail Gmail
-      to: 'benjaziaghofrane111@gmail.com',
+      to: email,
       subject: 'Réinitialisation de mot de passe',
       text: `Votre code de réinitialisation de mot de passe est : ${otp}`,
     };
@@ -122,7 +136,7 @@ async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: s
     });
   }
 
-  async verifyOTP(userId: string, otp: string): Promise<void> {
+ /* async verifyOTP(userId: string, otp: string): Promise<void> {
     const user = await this.usersModel.findById(userId);
     if (!user || user.resetToken !== otp || user.resetTokenExpiration < new Date()) {
       throw new BadRequestException('OTP invalide ou expiré');
@@ -132,23 +146,55 @@ async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: s
     user.resetTokenExpiration = undefined;
     await user.save();
   }
-
-  async resetPasswordWithOTP(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
-    const { email, otp, newPassword } = resetPasswordDto;
+ */
+  async verifyOTPByEmail(email: string, otp: string,userId:string): Promise<void> {
     const user = await this.usersModel.findOne({ email });
+
     if (!user || user.resetToken !== otp || user.resetTokenExpiration < new Date()) {
       throw new BadRequestException('OTP invalide ou expiré');
     }
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
+
+    // Réinitialiser le jeton et l'expiration de l'OTP
     user.resetToken = undefined;
     user.resetTokenExpiration = undefined;
+    await user.save();
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
+    const { email, newPassword } = resetPasswordDto;
+    const user = await this.usersModel.findOne({ email });
+    if (!user) {
+      throw new BadRequestException('Utilisateur non trouvé');
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
     await user.save();
     return { message: 'Mot de passe réinitialisé avec succès' };
   }
 
+  /*getCurrentUser(token: string): Promise<Users | undefined> {
+    const decoded = this.jwtService.decode(token);
+    if (decoded) {
+        return this.usersModel.findOne({ name: decoded['name'] }).exec();
+    } else {
+        return Promise.resolve(undefined);
+    }
+}
 
+async getUserProfile(userId: string): Promise<UsersDocument> {
+  return await this.usersModel.findById(userId).exec();
+}*/
+async getUserFromToken(token: string) {
+  try {
+    const decoded = this.jwtService.verify(token);
+    return decoded;
+  } catch (error) {
+    throw new UnauthorizedException('Invalid token');
+  }
+} 
 
+}
+  
   /* async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
     const { token, newPassword } = resetPasswordDto;
 
@@ -229,4 +275,4 @@ async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: s
     return { message: 'Password reset successfully' };
   }
   */
-}
+

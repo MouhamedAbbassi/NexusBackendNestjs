@@ -8,7 +8,8 @@ import { AuthController } from './auth.controller';
 import { GithubStrategy } from './github.strategy';
 //import { GoogleStrategy } from './google.strategy';
 import { ENV } from 'src/core/config';
-const strategies = [JwtStrategy, GithubStrategy]; //GoogleStrategy
+import { GoogleStrategy } from './google.strategy';
+const strategies = [JwtStrategy, GithubStrategy,GoogleStrategy]; 
 @Module({
   imports: [
     PassportModule,
