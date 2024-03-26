@@ -1,4 +1,4 @@
-import {Body,Controller,Get,Inject,Post,Req,Res,UseGuards, } from '@nestjs/common';
+/*import {Body,Controller,Get,Inject,Post,Req,Res,UseGuards, } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
  
   import { AuthService } from './auth.service';
@@ -24,7 +24,7 @@ import { AuthGuard } from '@nestjs/passport';
       return res.json({ accessToken });
     }*/
   
-    @UseGuards(AuthGuard('github'))
+    /*@UseGuards(AuthGuard('github'))
     @Get('login/github')
     async githubLogin() {}
   
@@ -43,4 +43,4 @@ import { AuthGuard } from '@nestjs/passport';
     async tokenInfo() {
       return 'Ok';
     }
-  }
+  }*/
