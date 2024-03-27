@@ -24,9 +24,13 @@ export class Users {
   @Prop()
   phoneNumber: number;
 
+
+  
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Projects' })
   projects: Projects;
-
+  
+  @Prop({ default: false })
+  active: boolean; // Ajoutez le champ active
 
   @Prop()
   resetToken: string;

@@ -20,7 +20,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
-import { MailerModule } from '@nestjs-modules/mailer';
 
 import { Backlog, BacklogSchema } from './backlog/schemas/backlog.schema';
 import { Tasks, TasksSchema } from './tasks/schemas/tasks.schema';
@@ -62,11 +61,6 @@ import { Projects, ProjectsSchema } from './projects/schemas/projects.schema';
     BacklogService,
     TasksService,
   ],
-
-
-
-
-
 
 
 

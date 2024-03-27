@@ -7,6 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EmailVerification, EmailVerificationSchema } from './schemas/email-verification.schema'; // Importez le schéma EmailVerification
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { EmailVerification, EmailVerificationSchema } from './schemas/email-veri
     ]),
     ConfigModule, // Importez ConfigModule ici s'il n'est pas déjà importé dans votre AppModule
     JwtModule.registerAsync({
-      imports: [ConfigModule], // Assurez-vous que ConfigModule est importé
+      imports: [ConfigModule], 
       inject: [ConfigService],
       useFactory: async (configService: ConfigService): Promise<JwtModuleOptions> => ({
         secret: configService.get<string>('JWT_ACCESS_SECRET'),
@@ -34,7 +35,7 @@ import { EmailVerification, EmailVerificationSchema } from './schemas/email-veri
  
   ],
   controllers: [UsersController],
-  providers: [UsersService],  
+  providers: [UsersService,JwtAuthGuard],  
   exports: [UsersService], // Exportez UsersService pour une utilisation dans d'autres modules
 })
 export class UsersModule {}

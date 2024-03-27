@@ -1,11 +1,10 @@
 import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtService } from 'src/users/JwtService';
-
 import { Secret } from 'src/users/secret'; 
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
+export class JwtMiddleware extends AuthGuard('jwt') {
   private jwtService: JwtService;
 
   constructor() {
@@ -26,8 +25,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     try {
       const decodedToken = this.jwtService.verify(token) as { role: string };
 
-      if (decodedToken && decodedToken.role && decodedToken.role === 'admin') {
-        // L'utilisateur a un rôle admin, autorise l'accès
+      if (decodedToken && (decodedToken.role === 'admin' || decodedToken.role === 'user')) {
+        // L'utilisateur a un rôle admin ou user, autorise l'accès
         return true;
       } else {
         throw new UnauthorizedException('Vous n\'êtes pas autorisé à effectuer cette action.');
