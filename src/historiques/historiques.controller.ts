@@ -59,4 +59,10 @@ export class HistoriquesController {
            throw new InternalServerErrorException('An error occurred while searching for the resource: ' + error.message);
          }
        }
-}
+  
+
+       @Get('byResourceId/:resourceId')
+       async findByResourceId(@Param('resourceId') resourceId: string): Promise<Historiques[]> {
+           return this.historiquesService.findByResourceId(resourceId);
+       }
+      }
