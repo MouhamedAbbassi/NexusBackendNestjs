@@ -20,6 +20,12 @@ import { MembresModule } from './membres/membres.module';
 import { ProjectsModule } from './projects/projects.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
+import { ProjectsController } from './projects/projects.controller';
+import { MembresController } from './membres/membres.controller';
+import { MembresService } from './membres/membres.service';
+import { Projects, ProjectsSchema } from './projects/schemas/projects.schema';
+import { Membres, MembresSchema } from './membres/schemas/Membres.schema';
+
  
 
 @Module({
@@ -34,9 +40,15 @@ import { ConfigModule } from '@nestjs/config';
    RessourcesModule, 
    HistoriquesModule, 
    BacklogModule,
-    TasksModule
+    TasksModule,
+    MongooseModule.forFeature([
+      { name: Projects.name, schema: ProjectsSchema },
+    ]),
+    MongooseModule.forFeature([
+      { name: Membres.name, schema: MembresSchema },
+    ]),
 ],
-  controllers: [AppController, UsersController, RessourcesController, BacklogController, TasksController],
-  providers: [AppService, ProjectsService, RessourcesService, HistoriquesService, BacklogService],
+  controllers: [AppController, UsersController, RessourcesController, BacklogController, TasksController, ProjectsController, MembresController],
+  providers: [AppService, ProjectsService, RessourcesService, HistoriquesService, BacklogService, ProjectsService, MembresService],
 })
 export class AppModule {}

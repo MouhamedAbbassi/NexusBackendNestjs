@@ -5,7 +5,7 @@ import { Membres } from 'src/membres/schemas/Membres.schema';
 import { Ressources } from 'src/ressources/schemas/ressources.schema';
 import { Users } from 'src/users/schemas/users.schema';
 
-export type RessourcesDocument = HydratedDocument<Projects>;
+export type ProjectsDocument = HydratedDocument<Projects>;
 
 @Schema()
 export class Projects {
