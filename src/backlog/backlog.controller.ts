@@ -49,6 +49,24 @@ export class BacklogController {
       throw new InternalServerErrorException('Failed to fetch backlogs');
     }
   }
+  ////////////////////////GET ALL PROJECTS////////////////////
+  @Get('allProjects')
+  async findAllProjects(): Promise<Projects[]> {
+    try {
+      return await this.backlogService.findAllProjects();
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to fetch project');
+    }
+  }
+  ////////////////////////GET ALL PROJECTS WITHOUT BACKLOG////////////////////
+  @Get('findAllProjectsWithoutBacklog')
+  async findAllProjectsWithoutBL(): Promise<Projects[]> {
+    try {
+      return await this.backlogService.findAllProjectsWithoutBacklog();
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to fetch project');
+    }
+  }
   ////////////////////////FIND BACKLOG BY ID/////////////////////////
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Backlog> {
