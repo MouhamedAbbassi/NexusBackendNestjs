@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards ,Get, Req, Res, Request, BadRequestException, Param, Query, HttpException, HttpStatus, Put, Delete, ForbiddenException, UseInterceptors, NotFoundException} from '@nestjs/common';
+import { Body, Controller, Post, UseGuards ,Get, Req, Res, Request, BadRequestException, Param, Query, HttpException, HttpStatus, Put, Delete, ForbiddenException, UseInterceptors, NotFoundException, UnauthorizedException,UploadedFile} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
@@ -14,7 +14,9 @@ import { Response } from 'express';
 import { JwtStrategy } from 'src/auth';
 import { AuthGuard } from '@nestjs/passport';
 import { LogoutUserDto } from './dto/logout.dto';
-
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('users')
 export class UsersController {
@@ -93,14 +95,17 @@ async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<{ messa
         return users;
     }*/
 
-    @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  async getProfile(@Request() req) {
-    const userData = await this.usersService.getUserFromToken(req.headers.authorization.split(' ')[1]);
-    // userData contient les informations de l'utilisateur extraites du token JWT
-    return userData;
-  }
+    @Get('profile')
+  async getProfile(@Req() request: Request): Promise<any> {
+    const authorizationHeader = request.headers['authorization'];
 
+    if (!authorizationHeader) {
+      throw new UnauthorizedException('Authorization header missing');
+    }
+
+    const token = authorizationHeader.split(' ')[1]; 
+    return this.usersService.getUserFromToken(token);
+  }
   @Get()
   async getUsers(): Promise<Users[]> {
     return this.usersService.findAll();
@@ -154,7 +159,7 @@ async logoutUser(@Body() logoutUserDto: LogoutUserDto): Promise<any> {
     if (error instanceof NotFoundException) {
       return { message: 'User not found' };
     }
-    throw error; // Rethrow the error to be caught by the caller
+    throw error; 
   }
   }
  
@@ -163,6 +168,15 @@ async logoutUser(@Body() logoutUserDto: LogoutUserDto): Promise<any> {
     return this.usersService.searchUsersByNameOrEmail(searchTerm);
   }
 
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    return await this.usersService.uploadImage(file);
+  }
 }
 
   

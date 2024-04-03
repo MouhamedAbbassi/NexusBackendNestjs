@@ -28,6 +28,7 @@ import { Projects, ProjectsSchema } from './projects/schemas/projects.schema';
 
 @Module({
   imports: [
+    
     ConfigModule.forRoot(),
     JwtModule,
     MongooseModule.forRoot(process.env.MONGO_URI),
@@ -44,7 +45,7 @@ import { Projects, ProjectsSchema } from './projects/schemas/projects.schema';
     MongooseModule.forFeature([{ name: Tasks.name, schema: TasksSchema }]),
     AuthModule,
     
-
+   
   ],
   controllers: [
     AppController,

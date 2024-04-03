@@ -3,7 +3,6 @@ import { Injectable, UnauthorizedException, BadRequestException, NotFoundExcepti
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Users, UsersDocument } from './schemas/users.schema';
-import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
@@ -12,11 +11,13 @@ import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import { EmailVerification, EmailVerificationDocument } from './schemas/email-verification.schema'; 
 import * as nodemailer from 'nodemailer';
-import { Request } from 'express';
 
 import { ConfigService } from '@nestjs/config';
 import { UpdateUserDto } from './dto/update-user.dto'
 import { DeleteUserDto } from './dto/delete-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import * as path from 'path';
+import { createWriteStream, existsSync, mkdirSync } from 'fs';
 @Injectable()
 export class UsersService {
   constructor(
@@ -25,7 +26,10 @@ export class UsersService {
     private readonly jwtService: JwtService,
     private configService: ConfigService,
 
-  ) {}
+  ) { const uploadDir = path.resolve(__dirname, '..', 'uploads');
+  if (!existsSync(uploadDir)) {
+    mkdirSync(uploadDir);
+  }}
  
 
   async findAll(): Promise<Users[]> {
@@ -176,20 +180,21 @@ async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: s
 async getUserProfile(userId: string): Promise<UsersDocument> {
   return await this.usersModel.findById(userId).exec();
 }*/
-async getUserFromToken(token: string): Promise<any> {
+async getUserFromToken(token: string): Promise<Users> {
   try {
     const decodedToken = this.jwtService.verify(token);
-    const userId = decodedToken.id; // Assurez-vous que vous extrayez correctement l'ID de l'utilisateur du token
-    const user = await this.usersModel.findById(userId).exec(); // Assurez-vous de récupérer l'utilisateur depuis la base de données
+    const userId = decodedToken.id;
+    const user = await this.usersModel.findById(userId).exec();
 
-    if (!user || !user.active) {
-      throw new UnauthorizedException('Utilisateur non actif ou introuvable');
+    if (!user) {
+      throw new UnauthorizedException('Utilisateur non trouvé');
     }
 
     return user;
   } catch (error) {
     throw new UnauthorizedException('Token invalide');
-  }}
+  }
+}
 
 
   async updateUser(userId: string, updateUserDto: UpdateUserDto, requestingUserRole: string): Promise<{ message: string }> {
@@ -261,6 +266,7 @@ async getCurrentUsers(): Promise<Users[]> {
 
 
 async updateUserActivity(token: string, activeStatus: boolean): Promise<Users> {
+  console.log('Token received:', token);
   try {
     const userId = this.extractUserIdFromToken(token);
     const user = await this.usersModel.findByIdAndUpdate(
@@ -274,22 +280,26 @@ async updateUserActivity(token: string, activeStatus: boolean): Promise<Users> {
     return user;
   } catch (error) {
     console.error('updateUserActivity error:', error);
-    throw error; // Rethrow the error to be caught by the caller
+    throw error; 
   }
 }
 
-extractUserIdFromToken(token: string): string {
-  try {
-    const decodedToken = this.jwtService.decode(token) as { userId: string };
-    if (!decodedToken || !decodedToken.userId) {
-      throw new NotFoundException('Invalid token');
+  extractUserIdFromToken(token: string): string {
+    console.log('token:', token);
+    try {
+      const decodedToken = this.jwtService.verify(token) ;
+      console.log(decodedToken); 
+      if (!decodedToken || !decodedToken.id) {
+        throw new NotFoundException('Invalid token');
+      }
+     // console.log('Decoded token:', decodedToken); 
+      return decodedToken.id;
+    } catch (error) {
+      console.error('extractUserIdFromToken error:', error);
+      throw error; 
     }
-    return decodedToken.userId;
-  } catch (error) {
-    console.error('extractUserIdFromToken error:', error);
-    throw error; // Rethrow the error to be caught by the caller
   }
-}
+  
 
  async searchUsersByNameOrEmail(searchTerm: string): Promise<Users[]> {
     // Utilisez une requête MongoDB pour rechercher par nom ou email
@@ -302,6 +312,32 @@ extractUserIdFromToken(token: string): string {
       })
       .exec();
     return users;
+  }
+
+  async uploadImage(file: Express.Multer.File): Promise<string> {
+    console.log('File received:', file);
+
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    const { originalname } = file;
+    const fileName = `${Date.now()}-${originalname}`;
+    const uploadPath = path.resolve(__dirname, '..', 'uploads', fileName);
+
+    return new Promise((resolve, reject) =>
+      createWriteStream(uploadPath)
+        .once('error', (err) => {
+          console.error('Error writing file:', err);
+          reject(err);
+        })
+        .once('finish', () => {
+          console.log('File saved:', fileName);
+          resolve(fileName);
+        })
+        .end(file.buffer)
+    );
+  
   }
 }
 

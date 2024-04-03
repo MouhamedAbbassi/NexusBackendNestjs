@@ -8,13 +8,16 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EmailVerification, EmailVerificationSchema } from './schemas/email-verification.schema'; // Importez le schéma EmailVerification
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
 
     MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }]),
   
- 
+    MulterModule.register({
+      dest: './uploads', // Dossier où les fichiers seront sauvegardés
+    }),
 
     PassportModule.register({ defaultStrategy: 'jwt' }),
     MongooseModule.forFeature([
