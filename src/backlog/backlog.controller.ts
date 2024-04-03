@@ -58,7 +58,7 @@ export class BacklogController {
       throw new InternalServerErrorException('Failed to fetch project');
     }
   }
-  ////////////////////////GET ALL PROJECTS////////////////////
+  ////////////////////////GET ALL PROJECTS WITHOUT BACKLOG////////////////////
   @Get('findAllProjectsWithoutBacklog')
   async findAllProjectsWithoutBL(): Promise<Projects[]> {
     try {
