@@ -41,12 +41,37 @@ export class BacklogService {
       } else throw new InternalServerErrorException('Failed to create backlog');
     }
   }
-  ////////////////////////GET ALL BACKLOG////////////////////
+  ////////////////////////GET ALL BACKLOGS////////////////////
   async findAll(): Promise<Backlog[]> {
     try {
       return await this.backlogModel.find().exec();
     } catch (error) {
       throw new InternalServerErrorException('Failed to fetch backlogs');
+    }
+  }
+  ////////////////////////GET ALL PROJECTS////////////////////
+  async findAllProjects(): Promise<Projects[]> {
+    try {
+      return await this.projectsModel.find().exec();
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to fetch projects');
+    }
+  }
+  ////////////////////////GET ALL PROJECTS////////////////////
+  async findAllProjectsWithoutBacklog(): Promise<Projects[]> {
+    try {
+      // Find all backlogs
+      const backlogs = await this.backlogModel.find().exec();
+
+      // Extract project IDs from backlogs
+      const projectIds = backlogs.map((backlog) => backlog.projects);
+
+      // Find projects where their IDs are not in the list of projectIds from backlogs
+      return await this.projectsModel
+        .find({ _id: { $nin: projectIds } })
+        .exec();
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to fetch projects');
     }
   }
   ////////////////////////FIND BACKLOG BY ID/////////////////////////
