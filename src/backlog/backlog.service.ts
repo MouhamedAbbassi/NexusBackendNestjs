@@ -57,7 +57,7 @@ export class BacklogService {
       throw new InternalServerErrorException('Failed to fetch projects');
     }
   }
-  ////////////////////////GET ALL PROJECTS////////////////////
+  ////////////////////////GET ALL PROJECTS WITHOUT BACKLOG////////////////////
   async findAllProjectsWithoutBacklog(): Promise<Projects[]> {
     try {
       // Find all backlogs
