@@ -7,6 +7,15 @@ export enum Status {
   progressing = 'Progressing',
   done = 'Done',
   Blocked = 'Blocked',
+  Testing = 'Testing',
+}
+
+export enum Priority {
+  lowest = 'Lowest',
+  low = 'Low',
+  medium = 'Medium',
+  high = 'High',
+  highest = 'Highest',
 }
 @Schema()
 export class Tasks {
@@ -20,15 +29,19 @@ export class Tasks {
   userStory: string;
 
   @Prop({ required: true })
-  periority: number;
+  deadLine: Date;
 
-  @Prop({ required: false })
-  estimationDate: Date;
+  @Prop({
+    type: String,
+    enum: Object.values(Priority),
+    default: Priority.medium,
+  })
+  priority: Priority;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Backlog' })
   backlog: string;
 
-  @Prop({ type: String, enum: Object.values(Status) })
+  @Prop({ type: String, enum: Object.values(Status), default: Status.todo })
   status: Status;
 }
 

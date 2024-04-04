@@ -14,10 +14,15 @@ export class Users {
   @Prop({ unique: [true, 'Duplicate email entered']})
   email: string;
 
-  @Prop()
-  password: string;
+
 
  
+
+  
+  @Prop({ required: true })
+  password: string; 
+
+  
 
   @Prop({ required: true, enum: ['admin', 'user'], default: 'user' })
   role: string;
@@ -43,7 +48,6 @@ export class Users {
     emailVerified: boolean;
 */
   
-
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

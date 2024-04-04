@@ -13,9 +13,12 @@ import { MulterModule } from '@nestjs/platform-express';
 @Module({
   imports: [
 
+
     MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }]),
   
     
+
+
 
     PassportModule.register({ defaultStrategy: 'jwt' }),
     MongooseModule.forFeature([

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, HydratedDocument } from 'mongoose';
+import mongoose, { Document, HydratedDocument } from 'mongoose';
 
 export type RessourcesDocument = HydratedDocument<Sprints>;
 
@@ -34,6 +34,7 @@ export class Sprints {
   @Prop({ type: Date })
   endDate: Date;
 
+  @Prop({ type: [{ name: String, type: { type: String, enum: Object.values(Type) }, priority: { type: String, enum: Object.values(Priority) }, status: { type: String, enum: Object.values(SprintStatus) } ,esp: Number,asp: Number}] })
   @Prop({
     type: [
       {
@@ -60,6 +61,9 @@ export class Sprints {
 
   @Prop()
   asp: number;
+  
+  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'meetings' }])
+  meetings: [string];
 }
 
 export const SprintsSchema = SchemaFactory.createForClass(Sprints);

@@ -49,6 +49,24 @@ export class BacklogController {
       throw new InternalServerErrorException('Failed to fetch backlogs');
     }
   }
+  ////////////////////////GET ALL PROJECTS////////////////////
+  @Get('allProjects')
+  async findAllProjects(): Promise<Projects[]> {
+    try {
+      return await this.backlogService.findAllProjects();
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to fetch project');
+    }
+  }
+  ////////////////////////GET ALL PROJECTS WITHOUT BACKLOG////////////////////
+  @Get('findAllProjectsWithoutBacklog')
+  async findAllProjectsWithoutBL(): Promise<Projects[]> {
+    try {
+      return await this.backlogService.findAllProjectsWithoutBacklog();
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to fetch project');
+    }
+  }
   ////////////////////////FIND BACKLOG BY ID/////////////////////////
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Backlog> {
@@ -117,6 +135,30 @@ export class BacklogController {
         throw error;
       }
       throw new InternalServerErrorException('Failed to fetch project');
+    }
+  }
+  @Get(':id/tasks')
+  async findTasksByBacklog(@Param('id') id: string): Promise<Tasks[]> {
+    try {
+      return await this.backlogService.findTasksByBacklog(id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to fetch backlog');
+    }
+  }
+  @Get(':id/completion')
+  async BacklogCompletion(@Param('id') id: string): Promise<string> {
+    try {
+      return await this.backlogService.BacklogCompletion(id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'Failed to calculate Tasks completion percentage',
+      );
     }
   }
 }

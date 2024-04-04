@@ -41,12 +41,37 @@ export class BacklogService {
       } else throw new InternalServerErrorException('Failed to create backlog');
     }
   }
-  ////////////////////////GET ALL BACKLOG////////////////////
+  ////////////////////////GET ALL BACKLOGS////////////////////
   async findAll(): Promise<Backlog[]> {
     try {
       return await this.backlogModel.find().exec();
     } catch (error) {
       throw new InternalServerErrorException('Failed to fetch backlogs');
+    }
+  }
+  ////////////////////////GET ALL PROJECTS////////////////////
+  async findAllProjects(): Promise<Projects[]> {
+    try {
+      return await this.projectsModel.find().exec();
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to fetch projects');
+    }
+  }
+  ////////////////////////GET ALL PROJECTS WITHOUT BACKLOG////////////////////
+  async findAllProjectsWithoutBacklog(): Promise<Projects[]> {
+    try {
+      // Find all backlogs
+      const backlogs = await this.backlogModel.find().exec();
+
+      // Extract project IDs from backlogs
+      const projectIds = backlogs.map((backlog) => backlog.projects);
+
+      // Find projects where their IDs are not in the list of projectIds from backlogs
+      return await this.projectsModel
+        .find({ _id: { $nin: projectIds } })
+        .exec();
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to fetch projects');
     }
   }
   ////////////////////////FIND BACKLOG BY ID/////////////////////////
@@ -87,6 +112,13 @@ export class BacklogService {
     backlogId: string,
     task: Tasks,
   ): Promise<Tasks> {
+    // Query the tasks collection to check if the taskId exists
+    const existingTask = await this.tasksModel
+      .findOne({ taskId: task.taskId })
+      .exec();
+    if (existingTask) {
+      throw new Error('Task ID already exists');
+    }
     // Find the backlog by ID
     const backlog = await this.backlogModel.findById(backlogId).exec();
     if (!backlog) {
@@ -117,6 +149,82 @@ export class BacklogService {
         throw error;
       }
       throw new InternalServerErrorException('Failed to fetch Project');
+    }
+  }
+
+  async findTasksByBacklog(id: string): Promise<Tasks[]> {
+    try {
+      const foundBacklog = await this.backlogModel.findById(id).exec();
+      if (!foundBacklog) {
+        throw new NotFoundException('Backlog not found');
+      }
+      // Retrieve task IDs from the found backlog
+      const taskIds = foundBacklog.tasks;
+      // Fetch tasks using the retrieved task IDs
+      const tasks = await this.tasksModel
+        .find({ _id: { $in: taskIds } })
+        .exec();
+
+      // Return the list of tasks
+      return tasks;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to fetch Tasks');
+    }
+  }
+  ////////////////////////BACKLOG TASKS COMPLETION /////////////////////////
+  async BacklogCompletion(id: string): Promise<string> {
+    try {
+      const foundBacklog = await this.backlogModel.findById(id).exec();
+      if (!foundBacklog) {
+        throw new NotFoundException('Backlog not found');
+      }
+      // Retrieve task IDs from the found backlog
+      const taskIds = foundBacklog.tasks;
+      // Fetch tasks using the retrieved task IDs
+      const tasks = await this.tasksModel
+        .find({ _id: { $in: taskIds } })
+        .exec();
+
+      let totalScore = 0;
+
+      tasks.forEach((task) => {
+        let status = 0;
+        switch (task.status) {
+          case 'Todo':
+            status = 0;
+            break;
+          case 'Progressing':
+            status = 2;
+            break;
+          case 'Testing':
+            status = 4;
+            break;
+          case 'Done':
+            status = 5;
+            break;
+          case 'Blocked':
+            status = -0.5;
+            break;
+          default:
+            status = 0;
+        }
+        totalScore += status;
+      });
+
+      // Calculate the backlog completion percentage
+      const backlogCompletion = totalScore / (5 * tasks.length);
+
+      return backlogCompletion.toFixed(3);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'Failed to calculate Tasks completion percentage',
+      );
     }
   }
 }
