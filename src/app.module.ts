@@ -25,10 +25,20 @@ import { Backlog, BacklogSchema } from './backlog/schemas/backlog.schema';
 import { Tasks, TasksSchema } from './tasks/schemas/tasks.schema';
 import { TasksService } from './tasks/tasks.service';
 import { Projects, ProjectsSchema } from './projects/schemas/projects.schema';
+import { MulterModule } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 @Module({
   imports: [
-    
+    MulterModule.register({
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+          cb(null, `${uniqueSuffix}-${file.originalname}`);
+        },
+      }),
+    }),
     ConfigModule.forRoot(),
     JwtModule,
     MongooseModule.forRoot(process.env.MONGO_URI),

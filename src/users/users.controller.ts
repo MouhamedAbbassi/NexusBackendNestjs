@@ -177,6 +177,12 @@ async logoutUser(@Body() logoutUserDto: LogoutUserDto): Promise<any> {
 
     return await this.usersService.uploadImage(file);
   }
+
+  @Post('save-image')
+  @UseInterceptors(FileInterceptor('image'))
+  async saveImage(@UploadedFile() file: Express.Multer.File): Promise<string> {
+    return this.usersService.saveImage(file);
+  }
 }
 
   

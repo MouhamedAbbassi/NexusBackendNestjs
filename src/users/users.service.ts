@@ -11,7 +11,7 @@ import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import { EmailVerification, EmailVerificationDocument } from './schemas/email-verification.schema'; 
 import * as nodemailer from 'nodemailer';
-
+import * as fs from 'fs/promises';
 import { ConfigService } from '@nestjs/config';
 import { UpdateUserDto } from './dto/update-user.dto'
 import { DeleteUserDto } from './dto/delete-user.dto';
@@ -316,28 +316,39 @@ async updateUserActivity(token: string, activeStatus: boolean): Promise<Users> {
 
   async uploadImage(file: Express.Multer.File): Promise<string> {
     console.log('File received:', file);
-
+  
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
-
+  
     const { originalname } = file;
     const fileName = `${Date.now()}-${originalname}`;
     const uploadPath = path.resolve(__dirname, '..', 'uploads', fileName);
-
-    return new Promise((resolve, reject) =>
-      createWriteStream(uploadPath)
-        .once('error', (err) => {
-          console.error('Error writing file:', err);
-          reject(err);
-        })
-        .once('finish', () => {
-          console.log('File saved:', fileName);
-          resolve(fileName);
-        })
-        .end(file.buffer)
-    );
   
+    // Créer une promesse pour gérer le processus d'écriture du fichier
+    return new Promise((resolve, reject) => {
+      const writeStream = createWriteStream(uploadPath);
+  
+      writeStream.on('error', (err) => {
+        console.error('Error writing file:', err);
+        reject(err); // Rejeter la promesse en cas d'erreur
+      });
+  
+      writeStream.on('finish', () => {
+        console.log('File saved:', fileName);
+        const imageUrl = `http://localhost:3000/uploads/${fileName}`; // URL de l'image sauvegardée
+        resolve(imageUrl); // Résoudre la promesse avec l'URL de l'image
+      });
+  
+      writeStream.end(file.buffer); // Écrire les données du fichier dans le flux d'écriture
+    });
+
+  }
+
+  async saveImage(file: Express.Multer.File): Promise<string> {
+    const imagePath = `uploads/${file.originalname}`;
+    await fs.writeFile(imagePath, file.buffer);
+    return imagePath;
   }
 }
 

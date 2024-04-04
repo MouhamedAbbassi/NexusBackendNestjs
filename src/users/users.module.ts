@@ -15,9 +15,7 @@ import { MulterModule } from '@nestjs/platform-express';
 
     MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }]),
   
-    MulterModule.register({
-      dest: './uploads', // Dossier où les fichiers seront sauvegardés
-    }),
+    
 
     PassportModule.register({ defaultStrategy: 'jwt' }),
     MongooseModule.forFeature([
