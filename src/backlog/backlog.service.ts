@@ -112,6 +112,13 @@ export class BacklogService {
     backlogId: string,
     task: Tasks,
   ): Promise<Tasks> {
+    // Query the tasks collection to check if the taskId exists
+    const existingTask = await this.tasksModel
+      .findOne({ taskId: task.taskId })
+      .exec();
+    if (existingTask) {
+      throw new Error('Task ID already exists');
+    }
     // Find the backlog by ID
     const backlog = await this.backlogModel.findById(backlogId).exec();
     if (!backlog) {
