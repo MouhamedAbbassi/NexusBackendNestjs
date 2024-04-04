@@ -1,13 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { google } from 'googleapis';
-import * as dotenv from 'dotenv';
-import { v4 as uuid } from 'uuid';
+import { Logger } from '@nestjs/common';
 import { Meetings, MeetingsDocument } from './schemas/meetings.schema';
-
+import * as nodemailer from 'nodemailer';
 @Injectable()
 export class MeetingsService {
+  private readonly logger = new Logger(MeetingsService.name);
 
   constructor(
     @InjectModel(Meetings.name) private meetingsModel: Model<MeetingsDocument>,
@@ -15,11 +14,23 @@ export class MeetingsService {
 
   async createMeeting(meetingData: Meetings): Promise<Meetings> {
     const createdMeeting = new this.meetingsModel(meetingData);
+    this.logger.log('Created Meeting:', createdMeeting);
     return createdMeeting.save();
   }
 
   async getAllMeetings(): Promise<Meetings[]> {
     return this.meetingsModel.find().exec();
+  }
+  async getMeetingByLinkMeet(linkMeet: string): Promise<Meetings> {
+    const meeting = await this.meetingsModel.findOne({ linkMeet }).exec();
+
+    if (!meeting) {
+      throw new NotFoundException(
+        `Meeting with linkMeet ${linkMeet} not found`,
+      );
+    }
+
+    return meeting;
   }
 
   async updateMeeting(id: string, meetingData: Meetings): Promise<Meetings> {
@@ -52,5 +63,47 @@ export class MeetingsService {
     }
 
     return meeting;
+  }
+  async sendEmail(
+    recipient: string,
+    subject: string,
+    body: string,
+    linkMeet: string,
+  ): Promise<void> {
+    try {
+      const generatedlink = 'https://localhost:3000/meetings/' + linkMeet;
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+          user: 'eduappteam@gmail.com',
+          pass: 'IslemAlaa-7',
+        },
+      });
+      const emailBody = `
+        <p>Hello,</p>
+        <p>${body}</p>
+        <p>Please click the following link to join the meeting:</p>
+        <a href="${generatedlink}">${generatedlink}</a>
+        <p>Thank you!</p>
+      `;
+      // Send email
+      await transporter.sendMail({
+        from: 'eduappteam@gmail.com',
+        to: 'islem.naffeti@esprit.tn',
+        subject: subject,
+        html: emailBody,
+      });
+
+      console.log('Email sent successfully');
+    } catch (error) {
+      console.error('Error sending email:', error);
+      throw error;
+    }
+  }
+
+  async getMeetingsBySprintId(sprintId: string): Promise<Meetings[]> {
+    return this.meetingsModel.find({ sprints: sprintId }).exec();
   }
 }

@@ -1,24 +1,26 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document, HydratedDocument } from 'mongoose';
-import { Backlog } from 'src/backlog/schemas/backlog.schema';
-import { Projects } from 'src/projects/schemas/projects.schema';
-
+import mongoose, { HydratedDocument } from 'mongoose';
 export type TasksDocument = HydratedDocument<Tasks>;
 
-
 export enum Status {
-    todo = 'Todo',
-    progressing = 'progressing',
-    done = 'done',
-    
+  todo = 'Todo',
+  progressing = 'Progressing',
+  done = 'Done',
+  Blocked = 'Blocked',
+  Testing = 'Testing',
+}
 
-  }
+export enum Priority {
+  lowest = 'Lowest',
+  low = 'Low',
+  medium = 'Medium',
+  high = 'High',
+  highest = 'Highest',
+}
 @Schema()
 export class Tasks {
-
   @Prop({ required: true })
   name: string;
-
 
   @Prop({ required: true })
   taskId: string;
@@ -27,21 +29,20 @@ export class Tasks {
   userStory: string;
 
   @Prop({ required: true })
-  periority: number;
+  deadLine: Date;
 
-  
-
-  @Prop({ required: true })
-  estimationDate: Date;
+  @Prop({
+    type: String,
+    enum: Object.values(Priority),
+    default: Priority.medium,
+  })
+  priority: Priority;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Backlog' })
-  backlog: Backlog;
+  backlog: string;
 
-  @Prop({ type: String, enum: Object.values(Status) })
+  @Prop({ type: String, enum: Object.values(Status), default: Status.todo })
   status: Status;
-
- 
-
 }
 
 export const TasksSchema = SchemaFactory.createForClass(Tasks);
