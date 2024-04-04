@@ -59,22 +59,4 @@ export class HistoriquesController {
            throw new InternalServerErrorException('An error occurred while searching for the resource: ' + error.message);
          }
        }
-  
-
-       @Get('byResourceId/:resourceId')
-       async findByResourceId(@Param('resourceId') resourceId: string): Promise<Historiques[]> {
-           return this.historiquesService.findByResourceId(resourceId);
-       }
-       @Get('byResourceId/:resourceId')
-  async getHistoriqueByResourceId(@Param('resourceId') resourceId: string) {
-    try {
-      const historique = await this.historiquesService.findByResourceId(resourceId);
-      if (!historique) {
-        throw new NotFoundException('Historique not found');
-      }
-      return historique;
-    } catch (error) {
-      throw new InternalServerErrorException('Failed to find historique by resourceId: ' + error.message);
-    }
-  }
-      }
+}

@@ -80,7 +80,11 @@ export class HistoriquesService {
       }
       async findByResourceId(resourceId: string): Promise<Historiques[]> {
         try {
+<<<<<<< HEAD
             const historiques = await this.ressourceModel.find({ resourceId }).sort({ createdAt: 1 }).exec();
+=======
+            const historiques = await this.ressourceModel.find({ resourceId }).exec();
+>>>>>>> e81a58920a2e5ef13fb284da18460db6fdceb406
             return historiques;
         } catch (error) {
             throw new InternalServerErrorException('Failed to find historiques by resourceId: ' + error.message);
