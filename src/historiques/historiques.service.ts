@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Historiques,HistoriqueDocument } from 'src/historiques/schemas/historiques.schema';
@@ -38,19 +38,21 @@ export class HistoriquesService {
     }
 
  
-      AddHist(name: string) {
+      AddHist(resourceId: string,name: string) {
 
         const newHist = new this.ressourceModel;
 
+       newHist.resourceId = resourceId;
         newHist.name = name;
         newHist.createdAt = new Date(Date.now());
 
         newHist.save();
         return newHist;
     }
-    UpHist(updatedDate: Date,createdDate:Date ,name: string) {
+    UpHist(resourceId: string,updatedDate: Date,createdDate:Date ,name: string) {
 
         const newHist = new this.ressourceModel;
+        newHist.resourceId = resourceId;
         newHist.name = name;
         newHist.modifiedAt= createdDate;
         newHist.modifiedAt= updatedDate;
@@ -76,11 +78,25 @@ export class HistoriquesService {
           throw new Error('Failed to find resource');
         }
       }
+      async findByResourceId(resourceId: string): Promise<Historiques[]> {
+        try {
+            const historiques = await this.ressourceModel.find({ resourceId }).sort({ createdAt: 1 }).exec();
+            return historiques;
+        } catch (error) {
+            throw new InternalServerErrorException('Failed to find historiques by resourceId: ' + error.message);
+        }
 
 
     }
-
+    async updateHistoriqueEntry(id: string, updatedData: Partial<Historiques>) {
+    try {
+        const updatedEntry = await this.ressourceModel.findByIdAndUpdate(id, updatedData, { new: true });
+        return updatedEntry;
+    } catch (error) {
+        throw new InternalServerErrorException('Failed to update historique entry: ' + error.message);
+    }
+}
 
 
     
-
+}

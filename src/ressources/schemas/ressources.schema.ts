@@ -19,6 +19,7 @@ export class Ressources extends Document{
 
     @Prop({required: true})
     filePath: string;
+    
 
     @Prop({required: true})
     fileType: string;
@@ -41,6 +42,7 @@ export class Ressources extends Document{
     file?: string;
     @Prop()
     url?: string;
+    
     @Prop()
     newFileName: string;
     @Prop()

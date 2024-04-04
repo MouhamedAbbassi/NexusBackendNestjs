@@ -23,7 +23,8 @@ fileSize: number;
   modifiedAt: Date;
   @Prop()
   resourceId: string;
-
+  @Prop()
+  filePath: string;
   @Prop()
   name: string;
 @Prop()

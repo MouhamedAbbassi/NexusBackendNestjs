@@ -57,7 +57,7 @@ export class RessourcesController {
 
       // Enregistrez la nouvelle ressource dans la base de données
       const addedRessource = await newRessource.save();
-         const addHistorique =this.HS.AddHist(newRessource.fileName);
+         const addHistorique =this.HS.AddHist(newRessource.id,newRessource.fileName);
 
       return 'File uploaded successfully';
     } catch (error) {
@@ -107,7 +107,7 @@ export class RessourcesController {
         createdAt: new Date(),
       });
       await newLink.save();
-     const addHistorique =this.HS.AddHist(newLink.fileName);
+     const addHistorique =this.HS.AddHist(newLink.id,newLink.fileName);
       return { message: 'Lien traité avec succès' };
     } catch (error) {
       throw new InternalServerErrorException('Une erreur est survenue lors du traitement du lien : ' + error.message);
@@ -204,7 +204,7 @@ export class RessourcesController {
   
       // Enregistrer la ressource mise à jour dans la base de données
       const updatedResource = await existingResource.save();
-     const upHist =this.HS.UpHist(updatedResource.createdAt,updatedResource.modifiedAt, updatedResource.fileName);
+     const upHist =this.HS.UpHist(id,updatedResource.createdAt,updatedResource.modifiedAt, updatedResource.fileName);
 
       return 'File uploaded successfully';
     } catch (error) {
@@ -257,12 +257,13 @@ export class RessourcesController {
       resource.filePath = 'links.txt'; // Chemin vers le fichier texte
       resource.fileType = 'txt';
       resource.createdAt = new Date();
+      resource.modifiedAt = new Date();
   
       // Enregistrement de la ressource mise à jour dans la base de données
       await resource.save();
   
       // Ajout de l'historique
-      const addHistorique = this.HS.AddHist(resource.fileName);
+      const addHistorique = this.HS.AddHist(id,resource.fileName);
   
       return { message: 'Lien mis à jour avec succès' };
     } catch (error) {
