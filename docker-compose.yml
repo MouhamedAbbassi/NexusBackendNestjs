@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  nestjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest-docker
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongodb:27017/pidb
+    depends_on:
+      - mongodb
+    command: npm run start:dev
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
