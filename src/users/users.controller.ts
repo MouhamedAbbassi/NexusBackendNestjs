@@ -17,6 +17,8 @@ import { LogoutUserDto } from './dto/logout.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { VerifyOTPDto } from './dto/verify-otp.dto';
+import {  UpdateUserProfileDto, UserProfile } from './dto/updateProfile.dto';
 
 @Controller('users')
 export class UsersController {
@@ -53,7 +55,26 @@ export class UsersController {
         throw new BadRequestException('Impossible d\'envoyer l\'email de récupération de mot de passe.');
       }
     }
+    @Post('/change-password')
+    async changePassword(
+     // @Body('userId') userId: string,
+      @Body('currentPassword') currentPassword: string,
+      @Body('newPassword') newPassword: string,
+      @Req() request: Request
+        ): Promise<{ message: string }> {
+      const authorizationHeader = request.headers['authorization'];
+
+      if (!authorizationHeader) {
+        throw new UnauthorizedException('Authorization header missing');
+      }
   
+      const token = authorizationHeader.split(' ')[1]; 
+      return await this.usersService.changePassword(
+       token,
+        currentPassword,
+        newPassword,
+      );
+    }
    /* @Post('/verify-otp/:userId')
   async verifyOTP(@Param('userId') userId: string, @Body('otp') otp: string): Promise<{ message: string }> {
     try {
@@ -111,7 +132,7 @@ async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<{ messa
     return this.usersService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard) // Utilisez le JwtAuthGuard pour cette route
+  //@UseGuards(JwtAuthGuard) // Utilisez le JwtAuthGuard pour cette route
   @Put(':userId')
   async updateUser(@Param('userId') userId: string, @Body() updateUserDto: UpdateUserDto) {
     // Passez le rôle "admin" en tant que troisième argument
@@ -132,8 +153,23 @@ async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<{ messa
 
 
 
-
-
+  @Post('verify-otp-sms')
+  async verifyOTPSMS(@Body() dto: VerifyOTPDto) {
+    
+    try {
+      const isOTPValid = await this.usersService.verifyOTPSMS(dto.email,dto.phoneNumber, dto.otp);
+      console.log(dto.phoneNumber)
+      console.log(isOTPValid);
+      if (isOTPValid) {
+        return { success: true }; 
+      } else {
+        return { success: false, message: 'Incorrect OTP' };
+      }
+    } catch (error) {
+      // Gérer les erreurs
+      return { success: false, message: 'Internal Server Error' };
+    }
+  }
   
 
 @UseGuards(JwtAuthGuard) // Utilisez le JwtAuthGuard pour cette route
@@ -147,6 +183,12 @@ async addUser(@Body() signUpDto: SignUpDto) {
   async getAllUsersCurrent(): Promise<Users[]> {
     return this.usersService.getCurrentUsers();
   }
+
+  @Get('notActive/all')
+  async getNotActiveUser(): Promise<Users[]> {
+    return this.usersService.getNotActiveUser();
+  }
+
 
  
   @Post('logout')
@@ -168,20 +210,39 @@ async logoutUser(@Body() logoutUserDto: LogoutUserDto): Promise<any> {
     return this.usersService.searchUsersByNameOrEmail(searchTerm);
   }
 
-  @Post('upload')
+  @Post('upload/:userId')
   @UseInterceptors(FileInterceptor('image'))
-  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+  async uploadImage(
+    @Param('userId') userId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
 
-    return await this.usersService.uploadImage(file);
+    return await this.usersService.updateUserPhoto(file, userId);
   }
 
   @Post('save-image')
   @UseInterceptors(FileInterceptor('image'))
   async saveImage(@UploadedFile() file: Express.Multer.File): Promise<string> {
     return this.usersService.saveImage(file);
+  }
+
+  @Post('update-profile')
+  /*async updateProfile(@Body() updateuserProfileDto:UpdateUserProfileDto){
+    console.log('ffff' ,updateuserProfileDto.token)
+ return await this.usersService.updateProfile(updateuserProfileDto.token,updateuserProfileDto.user)
+  }*/
+  async updateProfile(@Req() request: Request,@Body()userProfile:UserProfile): Promise<any> {
+    const authorizationHeader = request.headers['authorization'];
+
+    if (!authorizationHeader) {
+      throw new UnauthorizedException('Authorization header missing');
+    }
+
+    const token = authorizationHeader.split(' ')[1]; 
+    return await this.usersService.updateProfile(token,userProfile);
   }
 }
 

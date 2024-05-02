@@ -1,28 +1,54 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Historiques } from 'src/historiques/schemas/historiques.schema';
+//import { Historiques } from 'src/historiques/schemas/historiques.schema';
 import { Projects } from 'src/projects/schemas/projects.schema';
 
-export type RessourcesDocument = HydratedDocument<Ressources>;
+import { Document } from "mongoose";
+
+
+export type RessourcesDocument = Ressources & Document;
+
 
 @Schema()
-export class Ressources {
-  @Prop()
-  id: string;
+export class Ressources extends Document{
+    @Prop()
+    id?: string; // Rendre le champ facultatif en ajoutant le '?'
 
-  @Prop()
-  fileName: string;
+    @Prop({required: true})
+    fileName: string;
 
-  @Prop()
-  type: string;
-  @Prop()
-  experationDate: Date;
+    @Prop({required: true})
+    filePath: string;
+    
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Historiques' })
-  historiques: Historiques;
+    @Prop({required: true})
+    fileType: string;
+    @Prop()
+    fileSize: number;
+      @Prop()
+      insertedDate: Date;
+    
+      @Prop()
+      deleteDate: Date;
+      @Prop()
+      modifiedAt: Date;
+    @Prop()
+    expirationDate?: Date; // Rendre le champ facultatif en ajoutant le '?'
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Projects' })
-  Projects: Projects;
+    @Prop({ default: Date.now })
+    createdAt: Date;
+    
+    @Prop()
+    file?: string;
+    @Prop()
+    url?: string;
+    
+    @Prop()
+    newFileName: string;
+    @Prop()
+    link: string;
 }
+   /* @Prop({required: true})
+    Name: string;*/
 
-export const RessourcesSchema = SchemaFactory.createForClass(Ressources);
+export const RessourceSchema = SchemaFactory.createForClass(Ressources);

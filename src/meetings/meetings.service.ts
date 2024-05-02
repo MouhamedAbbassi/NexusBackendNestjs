@@ -78,7 +78,7 @@ export class MeetingsService {
         secure: true,
         auth: {
           user: 'eduappteam@gmail.com',
-          pass: 'IslemAlaa-7',
+          pass: 'fqbt giry uisj mvhz',
         },
       });
       const emailBody = `
@@ -91,7 +91,7 @@ export class MeetingsService {
       // Send email
       await transporter.sendMail({
         from: 'eduappteam@gmail.com',
-        to: 'islem.naffeti@esprit.tn',
+        to: 'narimen.azzouz@gmail.com',
         subject: subject,
         html: emailBody,
       });

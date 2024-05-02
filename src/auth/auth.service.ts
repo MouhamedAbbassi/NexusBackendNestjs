@@ -33,5 +33,35 @@ export class AuthService {
   }
 
 
-  
+  async loginWithGitHub (userDTO:any){
+    let user = await this.usersService.findUserByGitHubProfileId(userDTO.gitHubProfileId)
+    console.log(userDTO)
+    if (!user ){
+      user = await this.usersService.createUser(userDTO);
+    }
+    const payload = { gitHubProfileId: user.gitHubProfileId, id: user._id ,role:user.role}; // Utilisez _id comme sous-objet dans le payload JWT
+    const token = this.jwtService.sign(payload)
+    await this.usersService.updateUserActivity(token,true)
+    return {
+      token ,// Générez le jeton JWT
+      role: user.role // Incluez le rôle de l'utilisateur si nécessaire
+    };
+  }
+
+
+  async loginWithGoogle (userDTO:any){
+    let user = await this.usersService.findUserByGoogleProfileId(userDTO.googleProfileId)
+    console.log(user)
+    if (!user ){
+      user = await this.usersService.createUser(userDTO);
+    }
+    const payload = { googleProfileId: user.googleProfileId, id: user._id ,role:user.role}; // Utilisez _id comme sous-objet dans le payload JWT
+    const token = this.jwtService.sign(payload)
+    await this.usersService.updateUserActivity(token,true)
+    return {
+      token ,// Générez le jeton JWT
+      role: user.role // Incluez le rôle de l'utilisateur si nécessaire
+
+    };
+  }
 }

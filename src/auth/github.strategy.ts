@@ -18,6 +18,14 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
     profile: any,
     done: any,
   ): Promise<any> {
-    done(null, profile);
+    console.log(profile.photos);
+    const user = {
+      name: profile.displayName,
+     // email : profile.emails[0]?.value,
+      gitHubProfileId  : profile.id,
+      profileAvatar  :  profile.photos[0]?.value
+
+    }
+    done(null, user);
   }
 }
